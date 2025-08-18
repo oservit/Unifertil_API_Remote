@@ -1,0 +1,36 @@
+[
+  {
+    "Name": "Servidor Homologacao",
+    "DotNetProjectPath": "C:/Projects/Oserv/BoxPrint/Boxprint_Orcamento_Automatico/Backend/API/MiddlewareAPI.csproj",
+    "DotNetPublishOutputPath": "./publish",
+    "ReactProjectPath": "C:/Projects/Oserv/BoxPrint/Boxprint_Orcamento_Automatico/Frontend",
+    "ReactPublishOutputPath": "./dist",
+    "RemoteHost": "10.250.0.118",
+    "RemotePort": 22,
+    "Username": "oserv",
+    "Password": "Bzn06rx3LoW405msYVEsoSzoxl3Y/vKjwldwGyfqI9g=",
+    "DotNetRemoteDeployPath": "/home/oserv/deploy/Budget/API",
+    "RemoteServiceName": "MiddlewareAPI.dll",
+    "ReactRemoteDeployPath": "/home/oserv/deploy/Frontend",
+    "ReactApiUrl": "http://10.250.0.118:50007/api",
+    "IgnoreFiles": [ "appsettings.Production.json", "appsettings.Development.json" ],
+    "Opcao": 3
+  },
+  {
+    "Name": "Servidor Producao",
+    "DotNetProjectPath": "C:/Projects/Oserv/BoxPrint/Boxprint_Orcamento_Automatico/Backend/API/MiddlewareAPI.csproj",
+    "DotNetPublishOutputPath": "./publish",
+    "ReactProjectPath": "C:/Projects/Oserv/BoxPrint/Boxprint_Orcamento_Automatico/Frontend",
+    "ReactPublishOutputPath": "./dist",
+    "RemoteHost": "10.250.0.18",
+    "RemotePort": 22,
+    "Username": "oserv",
+    "Password": "Bzn06rx3LoW405msYVEsoSzoxl3Y/vKjwldwGyfqI9g=",
+    "DotNetRemoteDeployPath": "/home/oserv/deploy/Budget/API",
+    "RemoteServiceName": "MiddlewareAPI.dll",
+    "ReactRemoteDeployPath": "/home/oserv/deploy/Frontend",
+    "ReactApiUrl": "https://orcamento.boxprint.ind.br:50007/api",
+    "IgnoreFiles": [ "appsettings.Production.json", "appsettings.Development.json" ],
+    "Opcao": 1
+  }
+]
