@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 
-namespace API.Remote.Controllers.Base
+namespace API.Remote.Controllers.Common
 {
     public class GlobalExceptionFilter : IExceptionFilter
     {

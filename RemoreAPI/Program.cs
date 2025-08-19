@@ -3,7 +3,7 @@ using Libs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using API.Remote.Controllers.Base;
+using API.Remote.Controllers.Common;
 using System.Text;
 using System.Text.Json.Serialization;
 using Application.Features.Mapping;
