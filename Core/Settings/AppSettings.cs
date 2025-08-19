@@ -1,4 +1,4 @@
-﻿using Domain.Base;
+﻿using Domain.Common;
 using System.Text.Json.Serialization;
 
 namespace Domain.Settings

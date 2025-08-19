@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using Domain.Base;
-using Application.Features.Base;
+using Domain.Common;
+using Application.Common;
 
 namespace API.Remote.Controllers
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Libs.Base;
 using Libs;
-using Application.Features.Base;
+using Application.Common;
 
 namespace API.Remote.Controllers
 {

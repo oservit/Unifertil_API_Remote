@@ -1,4 +1,4 @@
-﻿using Domain.Base;
+﻿using Domain.Common;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 

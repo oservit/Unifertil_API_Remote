@@ -6,6 +6,7 @@ using Libs.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Service.Features.Authentication;
+using Service.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -17,8 +18,8 @@ namespace Application.Features.Authentication
         protected readonly IAuthenticationService _service;
         protected readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly Service.Base.IServiceFactory _serviceFactory;
-        public AuthenticationAppService(IAuthenticationService service, Service.Base.IServiceFactory serviceFactory,  IMapper mapper, IConfiguration configuration)
+        private readonly IServiceFactory _serviceFactory;
+        public AuthenticationAppService(IAuthenticationService service, IServiceFactory serviceFactory,  IMapper mapper, IConfiguration configuration)
         {
             _service = service;
             _mapper = mapper;

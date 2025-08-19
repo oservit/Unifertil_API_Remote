@@ -1,7 +1,7 @@
-﻿using Domain.Base;
+﻿using Domain.Common;
 using Domain.Base.Enums;
 using Domain.Settings;
-using Infrastructure.Data.Base;
+using Infrastructure.Data.Common;
 using Infrastructure.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
