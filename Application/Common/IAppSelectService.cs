@@ -1,5 +1,5 @@
 ﻿using Libs;
-using Libs.Base;
+using Libs.Common;
 
 namespace Application.Common
 {

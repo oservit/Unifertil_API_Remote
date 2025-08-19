@@ -1,4 +1,4 @@
-﻿namespace Libs.Base
+﻿namespace Libs.Common
 {
 
     public class DataResult

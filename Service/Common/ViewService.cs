@@ -1,4 +1,4 @@
-﻿using Libs.Base;
+﻿using Libs.Common;
 using Libs;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Repositories.Base;

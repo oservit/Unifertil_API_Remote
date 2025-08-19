@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Libs.Base;
+using Libs.Common;
 using Application.Features.Authentication;
 
 namespace API.Remote.Controllers

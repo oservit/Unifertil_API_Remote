@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Features.Authentication;
 using Libs;
-using Libs.Base;
+using Libs.Common;
 using Libs.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

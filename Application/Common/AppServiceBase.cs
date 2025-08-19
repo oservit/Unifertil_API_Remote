@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Common;
 using Domain.Settings;
-using Libs.Base;
+using Libs.Common;
 using Libs.Exceptions;
 using Microsoft.Extensions.Options;
 using Service.Common;
