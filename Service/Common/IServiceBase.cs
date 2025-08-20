@@ -9,6 +9,8 @@ namespace Service.Common
 
         Task<int> Update(T model);
 
+        Task<int> SaveOrUpdate(T model);
+
         Task<int> Delete(long id);
     }
 }

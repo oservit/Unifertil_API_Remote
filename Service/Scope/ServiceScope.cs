@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Service.Features.Authentication;
+using Service.Features.Products;
 
 namespace Service.Scope
 {
@@ -12,6 +13,7 @@ namespace Service.Scope
         public static void Register(IServiceCollection services)
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IProductService, ProductService>();
         }
     }
 }

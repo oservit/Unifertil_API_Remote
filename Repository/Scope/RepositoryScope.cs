@@ -4,6 +4,7 @@ using Infrastructure.Data.Oracle;
 using Infrastructure.Data.SqlServer;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Base.Transactions;
+using Infrastructure.Repositories.Products;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Scope
@@ -30,6 +31,7 @@ namespace Infrastructure.Scope
         private static void RegisterRepositories(IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProductRepositoryRepository, ProductRepository>();
         }
 
         private static void RegisterUnitsOfWork(IServiceCollection services)
