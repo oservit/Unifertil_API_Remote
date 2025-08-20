@@ -1,15 +1,15 @@
 ﻿using Application.Common;
 using Libs.Common;
 
-namespace Application.Features.Sync.Core
+namespace Application.Services.Sync.Core
 {
-    public interface ISyncAppServiceBase<TModel>
+    public interface ISyncRemoteServiceBase<TModel>
         where TModel : class, IViewModelBase
     {
         /// <summary>
         /// Insere ou atualiza o registro com base no Id do model.
         /// Retorna DataResult com sucesso ou falha.
         /// </summary>
-        Task<DataResult> SyncLocal(TModel model);
+        Task<DataResult> SyncRemote(TModel model);
     }
 }

@@ -10,7 +10,7 @@ namespace Domain.Features.Products
         [Key]
         [Column("ID")]
         [Sequence("SEQ_PRODUCTS_ID")]
-        public long? Id { get; set; }
+        public override long? Id { get; set; }
 
         [Column("NAME")]
         public string? Name { get; set; }

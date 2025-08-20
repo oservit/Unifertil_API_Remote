@@ -1,37 +1,55 @@
 ﻿using Application.Features.Products;
-using Application.Features.Sync.Core;
 using Application.Features.Sync.Products;
 using Application.Services.Core;
+using Application.Services.Sync.Products;
 using Libs.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Central.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/Product/Sync")]
     public class ProductSyncController : ControllerBase
     {
-        private readonly IProductSyncAppService _syncService;
+        private readonly IProductSyncAppService _appService;
+        private readonly IProductSyncRemoteService _remoteService;
 
-        public ProductSyncController(IProductSyncAppService syncService)
+        public ProductSyncController(
+            IProductSyncAppService appService,
+            IProductSyncRemoteService remoteService)
         {
-            _syncService = syncService;
+            _appService = appService;
+            _remoteService = remoteService;
         }
 
         /// <summary>
-        /// Endpoint de sincronização: insere ou atualiza produto
+        /// Recebe um produto para sincronizar localmente
         /// </summary>
         [HttpPost("Receive")]
-        public async Task<ActionResult<ApiResponse<DataResult>>> Sync([FromBody] ProductViewModel model)
+        public async Task<ActionResult<ApiResponse<DataResult>>> Receive([FromBody] ProductViewModel model)
         {
-            var result = await _syncService.Sync(model);
+            var result = await _appService.SyncLocal(model);
 
             if (result.Success)
                 return Ok(result);
-            else
-                return StatusCode(StatusCodes.Status500InternalServerError, result);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, result);
+        }
+
+        /// <summary>
+        /// Envia um produto para sincronização na API Central
+        /// </summary>
+        [HttpPost("Send")]
+        public async Task<ActionResult<ApiResponse<DataResult>>> Send([FromBody] ProductViewModel model)
+        {
+            var result = await _remoteService.SyncRemote(model);
+
+            if (result.Success)
+                return Ok(result);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, result);
         }
     }
 }

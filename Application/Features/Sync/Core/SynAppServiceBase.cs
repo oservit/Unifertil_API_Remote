@@ -7,7 +7,7 @@ using Service.Common;
 
 namespace Application.Features.Sync.Core
 {
-    public abstract class SyncAppServiceBase<TEntity, TModel> : ISyncRemoteAppServiceBase<TModel>
+    public abstract class SyncAppServiceBase<TEntity, TModel> : ISyncAppServiceBase<TModel>
         where TEntity : class, IEntityBase
         where TModel : class, IViewModelBase
     {
@@ -20,7 +20,7 @@ namespace Application.Features.Sync.Core
             _mapper = mapper;
         }
 
-        public virtual async Task<DataResult> Sync(TModel model)
+        public virtual async Task<DataResult> SyncLocal(TModel model)
         {
             try
             {
