@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Data;
-using Infrastructure.Repositories.Base;
+using Infrastructure.Repositories.Common;
 using Domain.Features.Authentication;
-using Infrastructure.Repositories.Authentication;
 
 namespace Infrastructure.Repositories.Authentication
 {

@@ -1,6 +1,6 @@
 ﻿using Libs;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure.Repositories.Base;
+using Infrastructure.Repositories.Common;
 using System.Linq.Expressions;
 
 namespace Service.Common

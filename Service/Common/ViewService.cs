@@ -1,7 +1,7 @@
 ﻿using Libs.Common;
 using Libs;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure.Repositories.Base;
+using Infrastructure.Repositories.Common;
 
 namespace Service.Common
 {

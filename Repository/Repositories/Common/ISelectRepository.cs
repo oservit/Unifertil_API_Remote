@@ -1,7 +1,7 @@
 ﻿using Libs;
 using System.Linq.Expressions;
 
-namespace Infrastructure.Repositories.Base
+namespace Infrastructure.Repositories.Common
 {
     public interface ISelectRepository<T> where T : class
     {

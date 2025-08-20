@@ -2,7 +2,7 @@
 using System.Data.Common;
 using System.Diagnostics;
 
-namespace Infrastructure.Repositories.Base
+namespace Infrastructure.Repositories.Common
 {
     public class SqlLoggingInterceptor : DbCommandInterceptor
     {

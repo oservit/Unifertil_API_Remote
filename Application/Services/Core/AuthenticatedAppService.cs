@@ -1,7 +1,7 @@
 ﻿using Application.Services.Auth;
 using Infrastructure.Http;
 
-namespace Application.Services.Base
+namespace Application.Services.Core
 {
     public abstract class AuthenticatedAppService
     {

@@ -1,5 +1,5 @@
 ﻿using Application.Services.Auth;
-using Application.Services.Base;
+using Application.Services.Core;
 using Infrastructure.Http;
 using Microsoft.Extensions.Configuration;
 

@@ -1,5 +1,5 @@
 ﻿using Domain.Features.Authentication;
-using Infrastructure.Repositories.Base;
+using Infrastructure.Repositories.Common;
 
 namespace Infrastructure.Repositories.Authentication
 {

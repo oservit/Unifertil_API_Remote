@@ -1,4 +1,4 @@
-﻿using Application.Services.Base;
+﻿using Application.Services.Core;
 using Infrastructure.Http;
 using Libs;
 using Microsoft.Extensions.Configuration;

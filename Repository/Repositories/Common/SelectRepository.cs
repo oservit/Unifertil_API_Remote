@@ -3,7 +3,7 @@ using Libs;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Infrastructure.Repositories.Base
+namespace Infrastructure.Repositories.Common
 {
     public class SelectRepository<T> : ISelectRepository<T> where T : class
     {
@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories.Base
         public IQueryable<T> ApplyExclusionFilter(IQueryable<T> query)
         {
             if (typeof(IAuditableEntity).IsAssignableFrom(typeof(T)))
-                query = query.Where(e => EF.Property<int>(e, "IsDeleted") == 0);
+                query = query.Where(e => EF.Property<long>(e, "IsDeleted") == 0);
 
             return query;
         }
@@ -62,6 +62,7 @@ namespace Infrastructure.Repositories.Base
         public virtual async Task<T?> Get(long id)
         {
             return await ApplyExclusionFilter(_context.Set<T>())
+                .AsNoTracking()
                 .FirstOrDefaultAsync(e => EF.Property<long>(e, "Id") == id);
         }
 
@@ -95,7 +96,11 @@ namespace Infrastructure.Repositories.Base
             IQueryable<T> query = ApplyExclusionFilter(_dbSet);
             query = IncludeNavigationProperties(query);
             query = ApplyFilter(query, filterRequest);
-            return await query.AsNoTracking().Distinct().ToListAsync();
+
+            return await query
+                .AsNoTracking()
+                .Distinct()
+                .ToListAsync();
         }
 
         public virtual async Task<IEnumerable<T>> GetList(Expression<Func<T, bool>> predicate)
@@ -144,15 +149,19 @@ namespace Infrastructure.Repositories.Base
         {
             return ApplyExclusionFilter(_context.Set<T>())
                 .AsNoTracking()
-                .Any(e => EF.Property<long>(e, "Id") == id);
+                .Count(e => EF.Property<long>(e, "Id") == id) > 0;
         }
 
         public virtual async Task<bool> Exists(Expression<Func<T, bool>> predicate)
         {
-            return await ApplyExclusionFilter(_context.Set<T>())
+            var count = await ApplyExclusionFilter(_context.Set<T>())
                 .AsNoTracking()
-                .AnyAsync(predicate);
+                .Where(predicate)
+                .CountAsync();
+
+            return count > 0;
         }
+
 
         public virtual void Dispose()
         {

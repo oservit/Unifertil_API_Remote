@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
 
-namespace Infrastructure.Repositories.Base
+namespace Infrastructure.Repositories.Common
 {
     public interface IRepositoryBase<T> : ISelectRepository<T> where T : class
     {
@@ -9,12 +9,6 @@ namespace Infrastructure.Repositories.Base
         /// </summary>
         /// <param name="entity">A entidade a ser adicionada.</param>
         Task<int> Save(T entity);
-
-        /// <summary>
-        /// Salva uma nova entidade ou atualiza uma existente no contexto.
-        /// </summary>
-        /// <param name="entity">A entidade a ser adicionada ou atualizada.</param>
-        Task<int> SaveOrUpdate(T entity);
 
         /// <summary>
         /// Salva uma lista de entidades.

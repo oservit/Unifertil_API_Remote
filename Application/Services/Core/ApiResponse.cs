@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Application.Services.Base
+namespace Application.Services.Core
 {
     public class ApiResponse<T>
     {

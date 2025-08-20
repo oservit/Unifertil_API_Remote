@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
 
-namespace Infrastructure.Repositories.Base
+namespace Infrastructure.Repositories.Common
 {
     public class UpdateObjectParameters
     {

@@ -9,8 +9,6 @@ namespace Domain.Common
         [JsonIgnore]
         private protected bool disposed;
 
-        [Key]
-        [Column("ID")]
         public virtual long? Id { get; set; }
 
         protected virtual void Dispose(bool disposing)

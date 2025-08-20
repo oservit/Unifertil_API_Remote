@@ -12,6 +12,6 @@
 
     public class UpdateViewModel : IUpdateViewModel
     {
-        public long Id { get; set; }
+        public virtual long Id { get; set; }
     }
 }

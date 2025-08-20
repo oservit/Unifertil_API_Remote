@@ -6,7 +6,7 @@ namespace Domain.Common
         /// <summary>
         /// Identificador do registro.
         /// </summary>
-        long? Id { get; set; }
-        object Clone();
+        public long? Id { get; set; }
+        public object Clone();
     }
 }
