@@ -7,7 +7,7 @@ namespace Domain.Settings
     public class AppSettings
     {
         [JsonPropertyName("Central")]
-        public CentralSettings Central { get; set; } = new CentralSettings();
+        public List<RemoteSettings> Remotes { get; set; } = new List<RemoteSettings>();
 
         [JsonPropertyName("Jwt")]
         public JwtSettings Token { get; set; } = new JwtSettings();

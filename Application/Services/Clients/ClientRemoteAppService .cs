@@ -13,7 +13,7 @@ namespace Application.Services.Clients
             IApiClient apiClient,
             ITokenService tokenService,
             IConfiguration config)
-            : base(apiClient, tokenService)
+            : base(apiClient, tokenService, config)
         {
             _baseUrl = $"{config["Central:Url"].TrimEnd('/')}/Client";
         }

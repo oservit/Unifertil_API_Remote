@@ -18,7 +18,7 @@ namespace Application.Services.Auth
             _config = config;
         }
 
-        public async Task<string> GetTokenAsync()
+        public async Task<string> GetTokenAsync(RemoteCredentials credentials)
         {
             // Retorna token cacheado se ainda válido
             if (!string.IsNullOrEmpty(_cachedToken) && _expiresAt > DateTime.UtcNow.AddMinutes(1))
@@ -27,20 +27,13 @@ namespace Application.Services.Auth
             // Cria o objeto de usuário
             var user = new
             {
-                username = _config["Central:User"],
-                password = Crypto.Decrypt(_config["Central:Password"])
+                username = credentials.User,
+                password = Crypto.Decrypt(credentials.Password)
             };
-
-            // URL da central
-            var centralUrl = _config["Central:Url"];
-            if (string.IsNullOrEmpty(centralUrl))
-                throw new Exception("URL da API Central não configurada");
-
-            centralUrl = centralUrl.TrimEnd('/');
 
             // POST para login
             var response = await _apiClient.PostAsync<ApiResponse<string>>(
-                $"{centralUrl}/Auth/GetToken",
+                $"{credentials.Url}/Auth/GetToken",
                 user
             );
 

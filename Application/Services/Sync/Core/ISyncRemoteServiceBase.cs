@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Common.Sync;
 using Libs.Common;
 
 namespace Application.Services.Sync.Core
@@ -7,9 +8,8 @@ namespace Application.Services.Sync.Core
         where TModel : class, IViewModelBase
     {
         /// <summary>
-        /// Insere ou atualiza o registro com base no Id do model.
-        /// Retorna DataResult com sucesso ou falha.
+        /// Envia dados para sincronização remota
         /// </summary>
-        Task<DataResult> SyncRemote(TModel model);
+        Task<DataResult> SyncRemote(SyncMessage<TModel> message);
     }
 }

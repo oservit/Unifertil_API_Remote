@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Common.Sync;
 using AutoMapper;
 using Domain.Common;
 using Libs.Common;
@@ -20,17 +21,17 @@ namespace Application.Features.Sync.Core
             _mapper = mapper;
         }
 
-        public virtual async Task<DataResult> SyncLocal(TModel model)
+        public virtual async Task<DataResult> SyncLocal(SyncMessage<TModel> message)
         {
             try
             {
-                if (model == null)
-                    throw new BusinessException("Model Nullo");
+                if (message?.Payload == null)
+                    throw new BusinessException("Payload nulo");
 
-                if (!model.Id.HasValue)
+                if (!message.Payload.Id.HasValue)
                     throw new BusinessException("Valor do Id Não Informado");
 
-                var entity = _mapper.Map<TEntity>(model);
+                var entity = _mapper.Map<TEntity>(message.Payload);
 
                 await _service.SaveOrUpdate(entity);
 
