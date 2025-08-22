@@ -13,8 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Libs\Libs.csproj" />
-    <ProjectReference Include="..\Repository\Infrastructure.csproj" />
     <ProjectReference Include="..\Service\Service.csproj" />
   </ItemGroup>
 
