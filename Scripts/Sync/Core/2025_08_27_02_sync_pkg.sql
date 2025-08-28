@@ -2,12 +2,21 @@ CREATE OR REPLACE PACKAGE sync_pkg AS
 
     -- Procedure genérica que envia JSON para qualquer entidade
     PROCEDURE send_to_api(
-        pi_entity_name  IN VARCHAR2,
+        pi_entity_id    IN NUMBER,
         pi_record_id    IN NUMBER,
+        pi_operation_id IN NUMBER,
         pi_payload_json IN CLOB,
         pi_sender_id    IN NUMBER DEFAULT 1,
-        pi_receiver_id  IN NUMBER DEFAULT 2
+        pi_receiver_id  IN NUMBER DEFAULT 2,
+        pi_hash         IN VARCHAR2,
+        pi_url          IN VARCHAR2
     );
+
+    -- Função que gera hash de produto
+    FUNCTION hash_product(
+        p_id   IN NUMBER,
+        p_name IN VARCHAR2
+    ) RETURN VARCHAR2;
 
     -- Procedure específica para Product que monta o JSON e chama send_to_api
     PROCEDURE send_product(
@@ -19,9 +28,11 @@ CREATE OR REPLACE PACKAGE sync_pkg AS
         p_stock_qty       IN NUMBER,
         p_unit_of_measure IN VARCHAR2,
         p_manufacturer    IN VARCHAR2,
+        p_operation_id    IN NUMBER,
         p_sender_id       IN NUMBER DEFAULT 1,
         p_receiver_id     IN NUMBER DEFAULT 2
     );
 
 END sync_pkg;
 /
+COMMIT;

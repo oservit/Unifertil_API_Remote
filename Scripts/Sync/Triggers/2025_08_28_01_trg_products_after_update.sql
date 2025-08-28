@@ -1,5 +1,5 @@
-CREATE OR REPLACE TRIGGER trg_products_after_insert
-AFTER INSERT ON products
+CREATE OR REPLACE TRIGGER trg_products_after_update
+AFTER UPDATE ON products
 FOR EACH ROW
 BEGIN
     sync_pkg.send_product(
@@ -11,8 +11,7 @@ BEGIN
         p_stock_qty       => :NEW.stock_quantity,
         p_unit_of_measure => :NEW.unit_of_measure,
         p_manufacturer    => :NEW.manufacturer,
-        p_operation_id    => 1
+        p_operation_id    => 2
     );
 END;
 /
-COMMIT;
