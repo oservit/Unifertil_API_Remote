@@ -8,11 +8,8 @@
 
   <ItemGroup>
     <Compile Remove="Features\Configuracoes\**" />
-    <Compile Remove="Features\NovaPasta\**" />
     <EmbeddedResource Remove="Features\Configuracoes\**" />
-    <EmbeddedResource Remove="Features\NovaPasta\**" />
     <None Remove="Features\Configuracoes\**" />
-    <None Remove="Features\NovaPasta\**" />
   </ItemGroup>
 
   <ItemGroup>

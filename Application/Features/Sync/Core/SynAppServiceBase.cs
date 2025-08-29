@@ -33,7 +33,7 @@ namespace Application.Features.Sync.Core
 
                 var entity = _mapper.Map<TEntity>(message.Payload);
 
-                await _service.SaveOrUpdate(entity);
+                //await _service.SaveOrUpdate(entity);
 
                 return new DataResult { Success = true, Data = entity };
             }

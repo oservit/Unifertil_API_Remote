@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Central.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/Product/Sync")]
     public class ProductSyncController : ControllerBase
