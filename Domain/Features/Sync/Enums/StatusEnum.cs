@@ -10,7 +10,7 @@ namespace Domain.Features.Sync.Enums
     public enum StatusEnum
     {
         [Description("Sucesso")]
-        Sucess = 1,
+        Success = 1,
         [Description("Erro")]
         Error = 2,
     }

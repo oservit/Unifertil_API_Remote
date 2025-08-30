@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Features.Sync
 {
-    [Table("SYNC_LOG")]
+    [Table("SYNC_LOG_AUX")]
     public class SyncLog : EntityBase
     {
         [Key]
