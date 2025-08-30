@@ -61,7 +61,7 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
         pi_entity_id    IN NUMBER,
         pi_record_id    IN NUMBER,
         pi_operation_id IN NUMBER,
-        pi_payload_json IN CLOB,
+        pi_inner_json   IN JSON_OBJECT_T,
         pi_sender_id    IN NUMBER DEFAULT 1,
         pi_receiver_id  IN NUMBER DEFAULT 2,
         pi_hash         IN VARCHAR2,
@@ -74,49 +74,60 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
         log_msg       VARCHAR2(4000);
         payload_bytes RAW(32767);
         v_token       VARCHAR2(4000);
+        v_payload_obj JSON_OBJECT_T;
+        v_payload_json CLOB;
     BEGIN
+        -- Monta JSON principal (envelope)
+        v_payload_obj := JSON_OBJECT_T();
+        v_payload_obj.put('senderId', pi_sender_id);
+        v_payload_obj.put('receiverId', pi_receiver_id);
+        v_payload_obj.put('payload', pi_inner_json);
+    
+        v_payload_json := v_payload_obj.to_clob;
+    
         -- Converte CLOB para RAW UTF-8
-        payload_bytes := UTL_RAW.cast_to_raw(pi_payload_json);
-
+        payload_bytes := UTL_RAW.cast_to_raw(v_payload_json);
+    
         req := UTL_HTTP.begin_request(pi_url, 'POST', 'HTTP/1.1');
         UTL_HTTP.set_header(req, 'Content-Type', 'application/json; charset=UTF-8');
         UTL_HTTP.set_header(req, 'Content-Length', TO_CHAR(UTL_RAW.length(payload_bytes)));
-
+    
         -- Se precisar de autenticação, obtem o token e adiciona no header
         IF pi_use_auth THEN
             get_auth_token(v_token);
             UTL_HTTP.set_header(req, 'Authorization', 'Bearer ' || v_token);
         END IF;
-
+    
         -- Envia JSON em bytes UTF-8
         UTL_HTTP.write_raw(req, payload_bytes);
         resp := UTL_HTTP.get_response(req);
-
+    
         -- Lê resposta
         BEGIN
             UTL_HTTP.read_text(resp, buffer, 32767);
         EXCEPTION
             WHEN UTL_HTTP.end_of_body THEN NULL;
         END;
-
+    
         UTL_HTTP.end_response(resp);
-
+    
         -- Grava log de sucesso
         INSERT INTO sync_log(
             entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
         ) VALUES (
-            pi_entity_id, pi_record_id, 1, pi_operation_id, NULL, SYSTIMESTAMP, pi_payload_json, pi_hash
+            pi_entity_id, pi_record_id, 1, pi_operation_id, NULL, SYSTIMESTAMP, v_payload_json, pi_hash
         );
-
+    
     EXCEPTION
         WHEN OTHERS THEN
             log_msg := SUBSTR(SQLERRM,1,4000);
             INSERT INTO sync_log(
                 entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
             ) VALUES (
-                pi_entity_id, pi_record_id, 2, pi_operation_id, log_msg, SYSTIMESTAMP, pi_payload_json, pi_hash
+                pi_entity_id, pi_record_id, 2, pi_operation_id, log_msg, SYSTIMESTAMP, v_payload_json, pi_hash
             );
     END send_to_api;
+
 
 
     -- Função que gera hash de produto
@@ -135,8 +146,7 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
         RETURN v_hash;
     END hash_product;
 
-
-    -- Procedure que monta JSON seguro usando JSON_OBJECT_T
+    -- Procedure que monta JSON seguro do produto
     PROCEDURE send_product(
         p_id              IN NUMBER,
         p_name            IN VARCHAR2,
@@ -150,17 +160,15 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
         p_sender_id       IN NUMBER DEFAULT 1,
         p_receiver_id     IN NUMBER DEFAULT 2
     ) IS
-        v_payload_json CLOB;
-        v_payload_obj  JSON_OBJECT_T;
-        v_inner_obj    JSON_OBJECT_T;
-        v_hash         VARCHAR2(128);
-        v_url          VARCHAR2(4000);
+        v_inner_obj   JSON_OBJECT_T;
+        v_hash        VARCHAR2(128);
+        v_url         VARCHAR2(4000);
     BEGIN
         -- Calcula hash e URL específicos do Product
         v_hash := hash_product(p_id, p_name);
         v_url  := 'http://127.0.0.1:50020/api/Product/Sync/Send';
-
-        -- Monta o JSON interno
+    
+        -- Monta JSON interno
         v_inner_obj := JSON_OBJECT_T();
         v_inner_obj.put('id', p_id);
         v_inner_obj.put('name', NVL(p_name,''));
@@ -170,18 +178,9 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
         v_inner_obj.put('stockQuantity', NVL(p_stock_qty,0));
         v_inner_obj.put('unitOfMeasure', NVL(p_unit_of_measure,''));
         v_inner_obj.put('manufacturer', NVL(p_manufacturer,''));
-
-        -- JSON principal
-        v_payload_obj := JSON_OBJECT_T();
-        v_payload_obj.put('senderId', p_sender_id);
-        v_payload_obj.put('receiverId', p_receiver_id);
-        v_payload_obj.put('payload', v_inner_obj);
-
-        -- Converte para CLOB
-        v_payload_json := v_payload_obj.to_clob;
-
-        -- Chama a procedure genérica passando hash e URL
-        send_to_api(1, p_id, p_operation_id, v_payload_json, p_sender_id, p_receiver_id, v_hash, v_url);
+    
+        -- Chama a procedure genérica passando o inner JSON
+        send_to_api(1, p_id, p_operation_id, v_inner_obj, p_sender_id, p_receiver_id, v_hash, v_url);
     END send_product;
 
 END sync_pkg;

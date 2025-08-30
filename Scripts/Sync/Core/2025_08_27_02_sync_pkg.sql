@@ -10,7 +10,7 @@ CREATE OR REPLACE PACKAGE sync_pkg AS
         pi_entity_id    IN NUMBER,
         pi_record_id    IN NUMBER,
         pi_operation_id IN NUMBER,
-        pi_payload_json IN CLOB,
+        pi_inner_json   IN JSON_OBJECT_T,
         pi_sender_id    IN NUMBER DEFAULT 1,
         pi_receiver_id  IN NUMBER DEFAULT 2,
         pi_hash         IN VARCHAR2,
@@ -24,7 +24,7 @@ CREATE OR REPLACE PACKAGE sync_pkg AS
         p_name IN VARCHAR2
     ) RETURN VARCHAR2;
 
-    -- Procedure que monta JSON seguro usando JSON_OBJECT_T
+    -- Procedure que monta JSON seguro do produto
     PROCEDURE send_product(
         p_id              IN NUMBER,
         p_name            IN VARCHAR2,
