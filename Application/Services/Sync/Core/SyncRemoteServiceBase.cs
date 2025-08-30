@@ -44,10 +44,10 @@ namespace Application.Services.Sync.Core
                                         User = r["User"],
                                         Password = r["Password"]
                                     })
-                                    .FirstOrDefault(r => r.Id == message.ReceiverId);
+                                    .FirstOrDefault(r => r.Id == message.Info.ReceiverId);
 
                 if (remote == null || string.IsNullOrEmpty(remote.Url))
-                    throw new InvalidOperationException($"Remote com Id {message.ReceiverId} não encontrado ou sem URL");
+                    throw new InvalidOperationException($"Remote com Id {message.Info.ReceiverId} não encontrado ou sem URL");
 
                 var url = $"{remote.Url}/{GetRoute()}/Sync/Receive";
 

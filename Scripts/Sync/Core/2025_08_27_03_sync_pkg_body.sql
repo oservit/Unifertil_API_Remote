@@ -68,20 +68,36 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
         pi_url          IN VARCHAR2,
         pi_use_auth     IN BOOLEAN DEFAULT TRUE
     ) IS
-        req           UTL_HTTP.req;
-        resp          UTL_HTTP.resp;
-        buffer        VARCHAR2(32767);
-        log_msg       VARCHAR2(4000);
-        payload_bytes RAW(32767);
-        v_token       VARCHAR2(4000);
-        v_payload_obj JSON_OBJECT_T;
+        req            UTL_HTTP.req;
+        resp           UTL_HTTP.resp;
+        buffer         VARCHAR2(32767);
+        log_msg        VARCHAR2(4000);
+        payload_bytes  RAW(32767);
+        v_token        VARCHAR2(4000);
+        v_info_obj     JSON_OBJECT_T;
+        v_payload_obj  JSON_OBJECT_T;
         v_payload_json CLOB;
+        v_inner_json   JSON_OBJECT_T := pi_inner_json;
+        v_success      VARCHAR2(5);
+        v_message      VARCHAR2(4000);
     BEGIN
+        -- Garante payload válido
+        IF v_inner_json IS NULL THEN
+            v_inner_json := JSON_OBJECT_T();
+        END IF;
+    
+        -- Cria objeto de informações (info)
+        v_info_obj := JSON_OBJECT_T();
+        v_info_obj.put('senderId',    pi_sender_id);
+        v_info_obj.put('receiverId',  pi_receiver_id);
+        v_info_obj.put('operationId', pi_operation_id);
+        v_info_obj.put('entityId',    pi_entity_id);
+        v_info_obj.put('hash',        pi_hash);
+    
         -- Monta JSON principal (envelope)
         v_payload_obj := JSON_OBJECT_T();
-        v_payload_obj.put('senderId', pi_sender_id);
-        v_payload_obj.put('receiverId', pi_receiver_id);
-        v_payload_obj.put('payload', pi_inner_json);
+        v_payload_obj.put('info',    v_info_obj);
+        v_payload_obj.put('payload', v_inner_json);
     
         v_payload_json := v_payload_obj.to_clob;
     
@@ -92,13 +108,13 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
         UTL_HTTP.set_header(req, 'Content-Type', 'application/json; charset=UTF-8');
         UTL_HTTP.set_header(req, 'Content-Length', TO_CHAR(UTL_RAW.length(payload_bytes)));
     
-        -- Se precisar de autenticação, obtem o token e adiciona no header
+        -- Se precisar de autenticação, obtém token
         IF pi_use_auth THEN
             get_auth_token(v_token);
             UTL_HTTP.set_header(req, 'Authorization', 'Bearer ' || v_token);
         END IF;
     
-        -- Envia JSON em bytes UTF-8
+        -- Envia JSON
         UTL_HTTP.write_raw(req, payload_bytes);
         resp := UTL_HTTP.get_response(req);
     
@@ -111,12 +127,31 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
     
         UTL_HTTP.end_response(resp);
     
-        -- Grava log de sucesso
-        INSERT INTO sync_log(
-            entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
-        ) VALUES (
-            pi_entity_id, pi_record_id, 1, pi_operation_id, NULL, SYSTIMESTAMP, v_payload_json, pi_hash
-        );
+        -- Tenta verificar se a API retornou success=false
+        BEGIN
+            v_success := JSON_VALUE(buffer, '$.success');
+            v_message := JSON_VALUE(buffer, '$.message');
+        EXCEPTION
+            WHEN OTHERS THEN
+                v_success := NULL;
+                v_message := NULL;
+        END;
+    
+        -- Se retornou sucesso false, registra no log como erro
+        IF v_success = 'false' THEN
+            INSERT INTO sync_log(
+                entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
+            ) VALUES (
+                pi_entity_id, pi_record_id, 2, pi_operation_id, SUBSTR(v_message,1,4000), SYSTIMESTAMP, v_payload_json, pi_hash
+            );
+        ELSE
+            -- Grava log de sucesso
+            INSERT INTO sync_log(
+                entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
+            ) VALUES (
+                pi_entity_id, pi_record_id, 1, pi_operation_id, NULL, SYSTIMESTAMP, v_payload_json, pi_hash
+            );
+        END IF;
     
     EXCEPTION
         WHEN OTHERS THEN
@@ -127,8 +162,6 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
                 pi_entity_id, pi_record_id, 2, pi_operation_id, log_msg, SYSTIMESTAMP, v_payload_json, pi_hash
             );
     END send_to_api;
-
-
 
     -- Função que gera hash de produto
     FUNCTION hash_product(
