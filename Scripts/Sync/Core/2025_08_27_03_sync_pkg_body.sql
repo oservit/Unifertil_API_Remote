@@ -139,14 +139,14 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
     
         -- Se retornou sucesso false, registra no log como erro
         IF v_success = 'false' THEN
-            INSERT INTO sync_log(
+            INSERT INTO sync_logs(
                 entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
             ) VALUES (
                 pi_entity_id, pi_record_id, 2, pi_operation_id, SUBSTR(v_message,1,4000), SYSTIMESTAMP, v_payload_json, pi_hash
             );
         ELSE
             -- Grava log de sucesso
-            INSERT INTO sync_log(
+            INSERT INTO sync_logs(
                 entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
             ) VALUES (
                 pi_entity_id, pi_record_id, 1, pi_operation_id, NULL, SYSTIMESTAMP, v_payload_json, pi_hash
@@ -156,7 +156,7 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
     EXCEPTION
         WHEN OTHERS THEN
             log_msg := SUBSTR(SQLERRM,1,4000);
-            INSERT INTO sync_log(
+            INSERT INTO sync_logs(
                 entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
             ) VALUES (
                 pi_entity_id, pi_record_id, 2, pi_operation_id, log_msg, SYSTIMESTAMP, v_payload_json, pi_hash

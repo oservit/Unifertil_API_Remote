@@ -18,16 +18,19 @@ namespace Application.Services.Sync.Core
     {
         private readonly IConfiguration _config;
         private readonly ISyncLogService _logService;
+        private readonly ISyncHashService _hashService;
 
         protected SyncRemoteServiceBase(
             IApiClient apiClient,
             ITokenService tokenService,
             IConfiguration config,
-            ISyncLogService logService)
+            ISyncLogService logService,
+            ISyncHashService hashService)
             : base(apiClient, tokenService, config)
         {
             _config = config; ;
             _logService = logService;
+            _hashService = hashService;
         }
 
         protected abstract string GetRoute();
@@ -48,6 +51,14 @@ namespace Application.Services.Sync.Core
                 HashValue = message.Info.Hash,
                 Entity = (EntityEnum)message.Info.EntityId,
                 Operation = (OperationEnum)message.Info.OperationId
+            };
+
+            var syncHash = new SyncHash
+            {
+                HashValue = message.Info.Hash,
+                EntityId = message.Info.EntityId,
+                RecordId = message.Payload.Id.Value,
+                OperationId = message.Info.OperationId
             };
 
             try
@@ -74,7 +85,10 @@ namespace Application.Services.Sync.Core
                 syncLog.Status = StatusEnum.Success;
                 syncLog.Message = null;
 
-                await _logService.Save(syncLog);
+
+                //await _logService.Save(syncLog);
+
+                await _hashService.SaveOrUpdate(syncHash);
 
                 return result;
             }

@@ -55,6 +55,5 @@ namespace Service.Common
                 return await _repository.Save(obj);
             }
         }
-
     }
 }

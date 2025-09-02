@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using Domain.Features.Sync;
+using Infrastructure.Data;
 using Infrastructure.Data.MySql;
 using Infrastructure.Data.Oracle;
 using Infrastructure.Data.SqlServer;
@@ -33,7 +34,9 @@ namespace Infrastructure.Scope
         {
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProductRepositoryRepository, ProductRepository>();
-            services.AddScoped<ISyncLogRepository, SyncLogRepository>();           
+            services.AddScoped<ISyncLogRepository, SyncLogRepository>();
+            services.AddScoped<ISyncHashRepository, SyncHashRepository>();
+            services.AddScoped<ISyncBatchRepository, SyncBatchRepository>();
         }
 
         private static void RegisterUnitsOfWork(IServiceCollection services)

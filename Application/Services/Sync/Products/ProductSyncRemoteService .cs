@@ -13,8 +13,9 @@ namespace Application.Services.Sync.Products
             IApiClient apiClient,
             ITokenService tokenService,
             IConfiguration config,
-            ISyncLogService logService)
-            : base(apiClient, tokenService, config, logService)
+            ISyncLogService logService,
+            ISyncHashService hashService)
+            : base(apiClient, tokenService, config, logService, hashService)
         {
         }
         protected override string GetRoute() => "Product";

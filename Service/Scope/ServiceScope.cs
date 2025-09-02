@@ -16,6 +16,8 @@ namespace Service.Scope
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ISyncLogService, SyncLogService>();
+            services.AddScoped<ISyncHashService, SyncHashService>();
+            services.AddScoped<ISyncBatchService, SyncBatchService>();
         }
     }
 }

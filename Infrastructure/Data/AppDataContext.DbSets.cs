@@ -10,5 +10,7 @@ namespace Infrastructure.Data
         public required DbSet<Product> Products { get; set; }
         public required DbSet<User> Users { get; set; }
         public required DbSet<SyncLog> SyncLogs { get; set; }
+        public required DbSet<SyncHash> SyncHashs { get; set; }
+        public required DbSet<SyncBatch> SyncBatchs { get; set; }
     }
 }
