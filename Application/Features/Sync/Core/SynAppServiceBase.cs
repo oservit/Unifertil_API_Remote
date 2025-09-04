@@ -2,9 +2,13 @@
 using Application.Common.Sync;
 using AutoMapper;
 using Domain.Common;
+using Domain.Features.Sync;
+using Domain.Features.Sync.Enums;
 using Libs.Common;
 using Libs.Exceptions;
 using Service.Common;
+using Service.Features.Sync;
+using System.Text.Json;
 
 namespace Application.Features.Sync.Core
 {
@@ -13,16 +17,38 @@ namespace Application.Features.Sync.Core
         where TModel : class, IViewModelBase
     {
         protected readonly IServiceBase<TEntity> _service;
+        private readonly ISyncLogService _logService;
+        private readonly ISyncHashService _hashService;
         protected readonly IMapper _mapper;
 
-        protected SyncAppServiceBase(IServiceBase<TEntity> service, IMapper mapper)
+        protected SyncAppServiceBase(IServiceBase<TEntity> service, ISyncLogService logService, ISyncHashService hashService, IMapper mapper)
         {
             _service = service;
             _mapper = mapper;
+            _logService = logService;
+            _hashService = hashService;
         }
 
         public virtual async Task<DataResult> SyncLocal(SyncMessage<TModel> message)
         {
+            var syncLog = new SyncLog
+            {
+                RecordId = message.Payload.Id.Value,
+                LogDateTime = DateTime.Now,
+                Payload = JsonSerializer.Serialize(message),
+                HashValue = message.Info.Hash,
+                Entity = (EntityEnum)message.Info.EntityId,
+                Operation = (OperationEnum)message.Info.OperationId
+            };
+
+            var syncHash = new SyncHash
+            {
+                HashValue = message.Info.Hash,
+                EntityId = message.Info.EntityId,
+                RecordId = message.Payload.Id.Value,
+                OperationId = message.Info.OperationId
+            };
+
             try
             {
                 if (message?.Payload == null)
@@ -35,11 +61,30 @@ namespace Application.Features.Sync.Core
 
                 //await _service.SaveOrUpdate(entity);
 
+                syncLog.Status = StatusEnum.Success;
+                syncLog.Message = null;
+
+               //await _logService.Save(syncLog);
+               //await _hashService.SaveOrUpdate(syncHash);
+
                 return new DataResult { Success = true, Data = entity };
             }
             catch (Exception ex)
             {
-                return ExceptionHelper.CreateErrorResult(ex);
+                if (message.Info.Caller.Equals(SyncCaller.Integrator))
+                {
+                    syncLog.Status = StatusEnum.Error;
+                    syncLog.Message = ex.Message;
+
+                    try
+                    {
+                        await _logService.Save(syncLog);
+                    }
+                    catch
+                    {
+                    }
+                }
+                throw;
             }
         }
     }

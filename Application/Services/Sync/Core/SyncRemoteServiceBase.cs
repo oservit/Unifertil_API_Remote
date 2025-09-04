@@ -82,27 +82,32 @@ namespace Application.Services.Sync.Core
 
                 var result = await PostAsync<DataResult>(url, message, credentiais);
 
-                syncLog.Status = StatusEnum.Success;
-                syncLog.Message = null;
+                // Só grava log e hash se for uma chamada via integrador.
+                if (message.Info.Caller.Equals(SyncCaller.Integrator))
+                {
+                    syncLog.Status = StatusEnum.Success;
+                    syncLog.Message = null;
 
-
-                //await _logService.Save(syncLog);
-
-                await _hashService.SaveOrUpdate(syncHash);
+                    await _logService.Save(syncLog);
+                    await _hashService.SaveOrUpdate(syncHash);
+                }
 
                 return result;
             }
             catch (Exception ex)
             {
-                syncLog.Status = StatusEnum.Error;
-                syncLog.Message = ex.Message;
+                if (message.Info.Caller.Equals(SyncCaller.Integrator))
+                {
+                    syncLog.Status = StatusEnum.Error;
+                    syncLog.Message = ex.Message;
 
-                try
-                {
-                    await _logService.Save(syncLog);
-                }
-                catch
-                {
+                    try
+                    {
+                        await _logService.Save(syncLog);
+                    }
+                    catch
+                    {
+                    }
                 }
                 throw;
             }

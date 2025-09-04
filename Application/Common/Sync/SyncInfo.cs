@@ -32,5 +32,10 @@ namespace Application.Common.Sync
         /// Hash do Registro
         /// </summary>
         public string Hash { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Origem da chamada.
+        /// </summary>
+        public SyncCaller? Caller { get; set; } = SyncCaller.Trigger;
     }
 }

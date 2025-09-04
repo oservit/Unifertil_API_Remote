@@ -145,6 +145,20 @@ CREATE OR REPLACE PACKAGE BODY sync_pkg AS
                 pi_entity_id, pi_record_id, 2, pi_operation_id, SUBSTR(v_message,1,4000), SYSTIMESTAMP, v_payload_json, pi_hash
             );
         ELSE
+
+            -- Insere ou atualiza hash na tabela sync_hashes
+            IF pi_operation_id = 1 THEN
+                INSERT INTO sync_hashes(entity_id, record_id, operation_id, hash_value, operation_date)
+                VALUES (pi_entity_id, pi_record_id, pi_operation_id, pi_hash, SYSTIMESTAMP);
+            ELSE
+                UPDATE sync_hashes
+                   SET hash_value     = pi_hash,
+                       operation_date = SYSTIMESTAMP,
+                       operation_id   = pi_operation_id
+                 WHERE entity_id = pi_entity_id
+                   AND record_id = pi_record_id;
+            END IF;
+        
             -- Grava log de sucesso
             INSERT INTO sync_logs(
                 entity_id, record_id, status_id, operation_id, message, log_datetime, payload, hash_value
