@@ -31,6 +31,14 @@ namespace Domain.Features.Sync
         [Required]
         public OperationEnum Operation { get; set; }
 
+        [Column("API_URL")]
+        [Required]
+        public string? ApiUrl { get; set; }
+
+        [Column("API_USERNAME")]
+        [Required]
+        public string? ApiUserName { get; set; }
+
         [Column("MESSAGE")]
         [MaxLength(4000)]
         public string? Message { get; set; }

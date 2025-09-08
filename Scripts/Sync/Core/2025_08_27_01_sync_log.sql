@@ -66,6 +66,8 @@ CREATE TABLE sync_logs (
     record_id    NUMBER NOT NULL,
     status_id    NUMBER NOT NULL,
     operation_id NUMBER NOT NULL,
+    api_url      VARCHAR2(400) DEFAULT NULL,
+    api_username VARCHAR2(100) DEFAULT NULL,
     message      VARCHAR2(4000),
     log_datetime TIMESTAMP DEFAULT SYSTIMESTAMP,
     payload      CLOB,

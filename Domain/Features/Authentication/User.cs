@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Features.Authentication
 {
-    [Table("USERS")]
+    [Table("API_USERS")]
     public class User : EntityBase
     {
         [Key]

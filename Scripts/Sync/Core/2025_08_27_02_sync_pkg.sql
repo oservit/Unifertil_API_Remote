@@ -1,8 +1,22 @@
-CREATE OR REPLACE PACKAGE sync_pkg AS
+CREATE OR REPLACE NONEDITIONABLE PACKAGE sync_pkg AS
+
+    -- Tipo para armazenar informações da API
+    TYPE t_api_info IS RECORD (
+        url_base VARCHAR2(4000),
+        username VARCHAR2(100),
+        password VARCHAR2(100)
+    );
+
+    -- Função que retorna API info cacheada
+    FUNCTION get_api_info_cached(
+        p_sender_id   IN NUMBER,
+        p_receiver_id IN NUMBER
+    ) RETURN t_api_info;
 
     -- Procedure que retorna token de autenticação
     PROCEDURE get_auth_token(
-        po_token OUT VARCHAR2
+        po_token     OUT VARCHAR2,
+        pi_api_info  IN t_api_info
     );
 
     -- Procedure genérica que envia JSON para qualquer entidade
@@ -14,7 +28,8 @@ CREATE OR REPLACE PACKAGE sync_pkg AS
         pi_sender_id    IN NUMBER DEFAULT 1,
         pi_receiver_id  IN NUMBER DEFAULT 2,
         pi_hash         IN VARCHAR2,
-        pi_url          IN VARCHAR2,
+        pi_endpoint     IN VARCHAR2,
+        pi_api_info     IN t_api_info,
         pi_use_auth     IN BOOLEAN DEFAULT TRUE
     );
 
@@ -40,5 +55,3 @@ CREATE OR REPLACE PACKAGE sync_pkg AS
     );
 
 END sync_pkg;
-/
-
