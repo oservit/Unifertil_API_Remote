@@ -37,6 +37,10 @@ namespace Infrastructure.Scope
             services.AddScoped<ISyncLogRepository, SyncLogRepository>();
             services.AddScoped<ISyncHashRepository, SyncHashRepository>();
             services.AddScoped<ISyncBatchRepository, SyncBatchRepository>();
+
+            services.AddScoped<ISyncRouteRepository, SyncRouteRepository>();
+            services.AddScoped<ISyncNodeRepository, SyncNodeRepository>();
+            services.AddScoped<ISyncViewRouteUserRepository, SyncViewRouteUserRepository>();
         }
 
         private static void RegisterUnitsOfWork(IServiceCollection services)

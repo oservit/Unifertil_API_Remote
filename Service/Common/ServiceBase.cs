@@ -8,14 +8,13 @@ namespace Service.Common
 {
     public abstract class ServiceBase<T> : SelectService<T>, IDisposable, IServiceBase<T> where T : class, IEntityBase
     {
-        private readonly new IRepositoryBase<T> _repository;
-        private readonly IHttpUserAccessor _httpUser;
-        private readonly IAuditService _auditService;
+        protected readonly IRepositoryBase<T> _repository;
+        protected readonly IAuditService _auditService;
 
-        public ServiceBase(IRepositoryBase<T> repository, IHttpUserAccessor httpUser, IAuditService auditService) : base(repository)
+        public ServiceBase(IRepositoryBase<T> repository, IHttpUserAccessor httpUser, IAuditService auditService) 
+            : base(repository, httpUser)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _httpUser = httpUser ?? throw new ArgumentNullException(nameof(httpUser));
             _auditService = auditService ?? throw new ArgumentNullException(nameof(auditService));
         }
 

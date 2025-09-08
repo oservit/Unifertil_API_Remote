@@ -18,6 +18,10 @@ namespace Service.Scope
             services.AddScoped<ISyncLogService, SyncLogService>();
             services.AddScoped<ISyncHashService, SyncHashService>();
             services.AddScoped<ISyncBatchService, SyncBatchService>();
+
+            services.AddScoped<ISyncRouteService, SyncRouteService>();
+            services.AddScoped<ISyncNodeService, SyncNodeService>();
+            services.AddScoped<ISyncViewRouteUserService, SyncViewRouteUserService>();
         }
     }
 }

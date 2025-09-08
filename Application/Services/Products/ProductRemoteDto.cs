@@ -29,6 +29,6 @@ namespace Application.Services.Products
         public string Manufacturer { get; set; } = string.Empty;
 
         [JsonPropertyName("createdAt")]
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace Application.Services.Products
             IConfiguration config)
             : base(apiClient, tokenService, config)
         {
-            _baseUrl = $"{config["Central:Url"].TrimEnd('/')}/Product";
+            _baseUrl = $"http://localhost:50010/api/Product";
         }
 
         public async Task<List<ProductRemoteDto>?> ListAllAsync()

@@ -6,7 +6,6 @@ using Domain.Features.Sync;
 using Domain.Features.Sync.Enums;
 using Infrastructure.Http;
 using Libs.Common;
-using Libs.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Service.Features.Sync;
 using System.Text.Json;

@@ -1,6 +1,7 @@
-﻿using Libs;
-using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Http;
 using Infrastructure.Repositories.Common;
+using Libs;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Service.Common
@@ -8,10 +9,12 @@ namespace Service.Common
     public class SelectService<T> : IDisposable, ISelectService<T> where T : class
     {
         protected readonly ISelectRepository<T> _repository;
+        protected readonly IHttpUserAccessor _httpUser;
 
-        public SelectService(ISelectRepository<T> repository)
+        public SelectService(ISelectRepository<T> repository, IHttpUserAccessor httpUser)
         {
-            _repository = repository;
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _httpUser = httpUser ?? throw new ArgumentNullException(nameof(httpUser));
         }
 
         public async Task<IEnumerable<dynamic>> DbQuery(

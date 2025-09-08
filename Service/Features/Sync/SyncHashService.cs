@@ -9,15 +9,11 @@ namespace Service.Features.Sync
     public class SyncHashService : ServiceBase<SyncHash>, ISyncHashService
     {
         private readonly ISyncHashRepository _hashRepository;
-        private readonly IHttpUserAccessor _httpUser;
-        private readonly IAuditService _auditService;
 
         public SyncHashService(ISyncHashRepository hashRepository, IHttpUserAccessor httpUser, IAuditService auditService)
             : base(hashRepository, httpUser, auditService)
         {
             _hashRepository = hashRepository ?? throw new ArgumentNullException(nameof(hashRepository));
-            _httpUser = httpUser ?? throw new ArgumentNullException(nameof(httpUser));
-            _auditService = auditService ?? throw new ArgumentNullException(nameof(auditService));
         }
 
         public override async Task<int> SaveOrUpdate(SyncHash obj)

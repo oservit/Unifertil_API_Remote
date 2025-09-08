@@ -1,20 +1,19 @@
 ﻿using Domain.Common;
-using Domain.Features.Authentication.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Domain.Features.Authentication
+namespace Domain.Features.Sync
 {
-    [Table("USERS")]
-    public class User : EntityBase
+    [Table("SYNC_USERS")]
+    public class SyncUser : EntityBase
     {
         [Key]
         [Column("ID")]
         public override long? Id { get; set; }
 
-        [Column("TYPE_ID")]
+        [Column("NODE_ID")]
         [Required]
-        public UserTypeEnum TypeId { get; set; }
+        public long NodeId { get; set; }
 
         [Column("USERNAME")]
         [Required]
@@ -25,10 +24,6 @@ namespace Domain.Features.Authentication
         [Required]
         [MaxLength(500)]
         public string Password { get; set; } = string.Empty;
-
-        [Column("DESCRIPTION")]
-        [MaxLength(200)]
-        public string? Description { get; set; }
 
         [Column("IS_ACTIVE")]
         public bool IsActive { get; set; } = true;
