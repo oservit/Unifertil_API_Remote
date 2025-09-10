@@ -6,7 +6,6 @@ using Domain.Features.Sync;
 using Domain.Features.Sync.Enums;
 using Infrastructure.Http;
 using Libs.Common;
-using Microsoft.Extensions.Configuration;
 using Service.Features.Sync;
 using System.Text.Json;
 
@@ -15,21 +14,21 @@ namespace Application.Services.Sync.Core
     public abstract class SyncRemoteServiceBase<TModel> : AuthenticatedAppService, ISyncRemoteServiceBase<TModel>
         where TModel : class, IViewModelBase
     {
-        private readonly IConfiguration _config;
         private readonly ISyncLogService _logService;
         private readonly ISyncHashService _hashService;
+        private readonly ISyncViewRouteUserService _routeService;
 
         protected SyncRemoteServiceBase(
             IApiClient apiClient,
             ITokenService tokenService,
-            IConfiguration config,
             ISyncLogService logService,
-            ISyncHashService hashService)
-            : base(apiClient, tokenService, config)
+            ISyncHashService hashService,
+            ISyncViewRouteUserService routeService)
+            : base(apiClient, tokenService)
         {
-            _config = config; ;
             _logService = logService;
             _hashService = hashService;
+            _routeService = routeService;
         }
 
         protected abstract string GetRoute();
@@ -42,51 +41,19 @@ namespace Application.Services.Sync.Core
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
-            var syncLog = new SyncLog
-            {
-                RecordId = message.Payload.Id.Value,
-                LogDateTime = DateTime.Now,
-                Payload = JsonSerializer.Serialize(message),
-                HashValue = message.Info.Hash,
-                Entity = (EntityEnum)message.Info.EntityId,
-                Operation = (OperationEnum)message.Info.OperationId
-            };
-
-            var syncHash = new SyncHash
-            {
-                HashValue = message.Info.Hash,
-                EntityId = message.Info.EntityId,
-                RecordId = message.Payload.Id.Value,
-                OperationId = message.Info.OperationId
-            };
+            var syncLog = BuildSyncLog(message);
+            var syncHash = BuildSyncHash(message);
 
             try
             {
-                var remote = _config.GetSection("Remotes")
-                                    .GetChildren()
-                                    .Select(r => new
-                                    {
-                                        Id = int.Parse(r["Id"]!),
-                                        Url = r["Url"]?.TrimEnd('/'),
-                                        User = r["User"],
-                                        Password = r["Password"]
-                                    })
-                                    .FirstOrDefault(r => r.Id == message.Info.ReceiverId);
+                var credentials = await GetRemoteCredentials(message.Info.ReceiverId);
+                var url = BuildSyncUrl(credentials.BaseUrl);
 
-                if (remote == null || string.IsNullOrEmpty(remote.Url))
-                    throw new InvalidOperationException($"Remote com Id {message.Info.ReceiverId} não encontrado ou sem URL");
+                var result = await PostAsync<DataResult>(url, message, credentials);
 
-                var url = $"{remote.Url}/{GetRoute()}/Sync/Receive";
-                var credentiais = new RemoteCredentials(remote.User, remote.Password, remote.Url);
-
-                var result = await PostAsync<DataResult>(url, message, credentiais);
-
-                // Só grava log e hash se for uma chamada via integrador.
                 if (message.Info.Caller.Equals(SyncCaller.Integrator))
                 {
                     syncLog.Status = StatusEnum.Success;
-                    syncLog.Message = null;
-
                     await _logService.Save(syncLog);
                     await _hashService.SaveOrUpdate(syncHash);
                 }
@@ -100,16 +67,59 @@ namespace Application.Services.Sync.Core
                     syncLog.Status = StatusEnum.Error;
                     syncLog.Message = ex.Message;
 
-                    try
-                    {
-                        await _logService.Save(syncLog);
-                    }
-                    catch
-                    {
-                    }
+                    TrySaveLog(syncLog);
                 }
                 throw;
             }
         }
+
+        private SyncLog BuildSyncLog(SyncMessage<TModel> message) =>
+            new SyncLog
+            {
+                RecordId = message.Payload.Id.Value,
+                LogDateTime = DateTime.Now,
+                Payload = JsonSerializer.Serialize(message),
+                HashValue = message.Info.Hash,
+                Entity = (EntityEnum)message.Info.EntityId,
+                Operation = (OperationEnum)message.Info.OperationId
+            };
+
+        private SyncHash BuildSyncHash(SyncMessage<TModel> message) =>
+            new SyncHash
+            {
+                HashValue = message.Info.Hash,
+                EntityId = message.Info.EntityId,
+                RecordId = message.Payload.Id.Value,
+                OperationId = message.Info.OperationId
+            };
+
+        private async Task<RemoteCredentials> GetRemoteCredentials(int receiverId)
+        {
+            try
+            {
+                var route = await _routeService.Get(x => x.TargetNodeId == receiverId && x.RouteIsActive && x.UserIsActive);
+
+                if (route == null)
+                    throw new Exception("Nenhuma Configuração de Rota Válida Encontrada");
+
+                var info = new RemoteCredentials(route.UserName, "1234", route.TargetNodeUrl);
+
+                return info;
+            }
+
+            catch
+            {
+                throw;
+            }
+        }
+
+        private string BuildSyncUrl(string remoteUrl) => $"{remoteUrl}/{GetRoute()}/Sync/Receive";
+
+        private async void TrySaveLog(SyncLog log)
+        {
+            try { await _logService.Save(log); }
+            catch { /* swallow exception */ }
+        }
+
     }
 }

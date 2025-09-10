@@ -11,11 +11,17 @@ namespace Domain.Features.Sync.Views
         [Column("ROUTE_ID")]
         public long Id { get; set; }
 
+        [Column("SOURCE_NODE_ID")]
+        public long SourceNodeId { get; set; }
+
         [Column("SOURCE_NODE_NAME")]
         public string SourceNodeName { get; set; } = string.Empty;
 
         [Column("SOURCE_NODE_URL")]
         public string SourceNodeUrl { get; set; } = string.Empty;
+
+        [Column("TARGET_NODE_ID")]
+        public long TargetNodeId { get; set; }
 
         [Column("TARGET_NODE_NAME")]
         public string TargetNodeName { get; set; } = string.Empty;

@@ -2,7 +2,6 @@
 using Application.Services.Auth;
 using Application.Services.Sync.Core;
 using Infrastructure.Http;
-using Microsoft.Extensions.Configuration;
 using Service.Features.Sync;
 
 namespace Application.Services.Sync.Products
@@ -12,10 +11,10 @@ namespace Application.Services.Sync.Products
         public ProductSyncRemoteService(
             IApiClient apiClient,
             ITokenService tokenService,
-            IConfiguration config,
             ISyncLogService logService,
-            ISyncHashService hashService)
-            : base(apiClient, tokenService, config, logService, hashService)
+            ISyncHashService hashService,
+            ISyncViewRouteUserService routeService)
+            : base(apiClient, tokenService, logService, hashService, routeService)
         {
         }
         protected override string GetRoute() => "Product";

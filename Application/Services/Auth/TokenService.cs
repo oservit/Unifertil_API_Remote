@@ -33,7 +33,7 @@ namespace Application.Services.Auth
 
             // POST para login
             var response = await _apiClient.PostAsync<ApiResponse<string>>(
-                $"{credentials.Url}/Auth/GetToken",
+                $"{credentials.BaseUrl}/Auth/GetToken",
                 user
             );
 

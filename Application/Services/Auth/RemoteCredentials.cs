@@ -16,15 +16,15 @@
         public string Password { get; set; } = null!;
 
         /// <summary>
-        /// Url de autenticação (get token)
+        /// Url Base.
         /// </summary>
-        public string Url { get; set; }
+        public string BaseUrl { get; set; }
 
         public RemoteCredentials(string user, string password, string url)
         {
             User = user;
             Password = password;
-            Url = url;
+            BaseUrl = url;
         }
     }
 }
