@@ -6,9 +6,6 @@ namespace Domain.Settings
     [Serializable]
     public class AppSettings
     {
-        [JsonPropertyName("Central")]
-        public List<RemoteSettings> Remotes { get; set; } = new List<RemoteSettings>();
-
         [JsonPropertyName("Jwt")]
         public JwtSettings Token { get; set; } = new JwtSettings();
 
