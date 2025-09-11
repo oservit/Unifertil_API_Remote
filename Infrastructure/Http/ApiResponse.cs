@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Application.Services.Core
+namespace Infrastructure.Http
 {
     public class ApiResponse<T>
     {
@@ -22,5 +22,8 @@ namespace Application.Services.Core
 
         [JsonPropertyName("time")]
         public DateTime Time { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
     }
 }

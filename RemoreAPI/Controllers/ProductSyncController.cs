@@ -1,7 +1,7 @@
 ﻿using Application.Common.Sync;
 using Application.Features.Products;
 using Application.Features.Sync.Products;
-using Application.Services.Core;
+using Infrastructure.Http;
 using Application.Services.Sync.Products;
 using Libs.Common;
 using Microsoft.AspNetCore.Authorization;

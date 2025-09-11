@@ -15,7 +15,7 @@ namespace Application.Services.Products
             ITokenService tokenService)
             : base(apiClient, tokenService)
         {
-            _crendentials = new RemoteCredentials("CAR010", "1234", "http://localhost:50010/api");
+            _crendentials = new RemoteCredentials("CAR01", "9xIfOpsuIboSK/QHmdICcsysFqADJRPjxQFn0fKA3EI=", "http://localhost:50010/api");
             _baseUrl = $"http://localhost:50010/api/Product";
         }
 

@@ -14,11 +14,11 @@ namespace Service.Scope
         public static void Register(IServiceCollection services)
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ISyncLogService, SyncLogService>();
             services.AddScoped<ISyncHashService, SyncHashService>();
             services.AddScoped<ISyncBatchService, SyncBatchService>();
-
             services.AddScoped<ISyncRouteService, SyncRouteService>();
             services.AddScoped<ISyncNodeService, SyncNodeService>();
             services.AddScoped<ISyncViewRouteUserService, SyncViewRouteUserService>();

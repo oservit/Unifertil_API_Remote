@@ -1,4 +1,6 @@
 ﻿using Infrastructure.Logging;
+using Libs.Exceptions;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -73,7 +75,11 @@ namespace Infrastructure.Http
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
         }
 
-        private async Task<T?> HandleResponse<T>(HttpResponseMessage response, string method, string url, object? requestData = null)
+        private async Task<T?> HandleResponse<T>(
+            HttpResponseMessage response,
+            string method,
+            string url,
+            object? requestData = null)
         {
             var content = await response.Content.ReadAsStringAsync();
 
@@ -86,8 +92,38 @@ namespace Infrastructure.Http
             }
             else
             {
+                string? apiMessage = null;
+
+                try
+                {
+                    var errorResponse = JsonSerializer.Deserialize<ApiResponse<object>>(content, _jsonOptions);
+                    if (errorResponse != null)
+                    {
+                        apiMessage = errorResponse.Message;
+                        _logger.LogWarning($"{method} {url} - API retornou erro {(int)response.StatusCode}: {apiMessage}");
+                    }
+                }
+                catch
+                {
+                    // tenta extrair manualmente o "message" do JSON cru
+                    try
+                    {
+                        using var doc = JsonDocument.Parse(content);
+                        if (doc.RootElement.TryGetProperty("message", out var msgProp))
+                            apiMessage = msgProp.GetString();
+                    }
+                    catch
+                    {
+                        // ignora, apiMessage continua null
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(apiMessage))
+                    throw new BusinessException(apiMessage) { Code = (int)response.StatusCode };
+
+                // fallback genérico se não conseguimos pegar a mensagem
                 _logger.LogError($"{method} {url} - Erro {(int)response.StatusCode}: {response.ReasonPhrase}\n{content}");
-                throw new HttpRequestException($"Erro {(int)response.StatusCode} - {response.ReasonPhrase}");
+                throw new BusinessException("Erro interno ao chamar API remota") { Code = (int)response.StatusCode };
             }
         }
     }

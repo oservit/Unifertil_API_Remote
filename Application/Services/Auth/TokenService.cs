@@ -20,31 +20,34 @@ namespace Application.Services.Auth
 
         public async Task<string> GetTokenAsync(RemoteCredentials credentials)
         {
-            // Retorna token cacheado se ainda válido
-            if (!string.IsNullOrEmpty(_cachedToken) && _expiresAt > DateTime.UtcNow.AddMinutes(1))
-                return _cachedToken;
-
-            // Cria o objeto de usuário
-            var user = new
+            try
             {
-                username = credentials.User,
-                password = Crypto.Decrypt(credentials.Password)
-            };
+                if (!string.IsNullOrEmpty(_cachedToken) && _expiresAt > DateTime.UtcNow.AddMinutes(1))
+                    return _cachedToken;
 
-            // POST para login
-            var response = await _apiClient.PostAsync<ApiResponse<string>>(
-                $"{credentials.BaseUrl}/Auth/GetToken",
-                user
-            );
+                var user = new
+                {
+                    username = credentials.User,
+                    password = Crypto.Decrypt(credentials.Password)
+                };
 
-            if (response?.Success != true || string.IsNullOrEmpty(response.Data))
-                throw new Exception("Falha ao autenticar na API Central");
+                var response = await _apiClient.PostAsync<ApiResponse<string>>(
+                    $"{credentials.BaseUrl}/Auth/GetToken",
+                    user
+                );
 
-            // Cache do token com Bearer
-            _cachedToken = response.Data;
-            _expiresAt = DateTime.UtcNow.AddMinutes(30);
+                if (response == null || !response.Success)
+                    throw new Exception($"Erro ao autenticar na API Destino: {response?.Message}");
 
-            return _cachedToken;
+                _cachedToken = response.Data;
+                _expiresAt = DateTime.UtcNow.AddMinutes(30);
+
+                return _cachedToken;
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }
