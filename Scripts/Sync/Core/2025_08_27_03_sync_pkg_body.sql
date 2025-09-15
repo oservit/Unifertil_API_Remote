@@ -170,17 +170,20 @@ CREATE OR REPLACE NONEDITIONABLE PACKAGE BODY sync_pkg AS
                 pi_entity_id, pi_record_id, 2, pi_operation_id, pi_api_info.url_base || pi_endpoint, pi_api_info.username, SUBSTR(v_message,1,4000), SYSTIMESTAMP, v_payload_json, pi_hash
             );
         ELSE
-            IF pi_operation_id = 1 THEN
-                INSERT INTO sync_hashes(entity_id, record_id, operation_id, hash_value, operation_date)
+
+            MERGE INTO sync_hashes sh
+            USING (SELECT pi_entity_id AS entity_id,
+                          pi_record_id AS record_id
+                   FROM dual) src
+            ON (sh.entity_id = src.entity_id AND sh.record_id = src.record_id)
+            WHEN MATCHED THEN
+                UPDATE SET
+                    sh.hash_value     = pi_hash,
+                    sh.operation_date = SYSTIMESTAMP,
+                    sh.operation_id   = pi_operation_id
+            WHEN NOT MATCHED THEN
+                INSERT (entity_id, record_id, operation_id, hash_value, operation_date)
                 VALUES (pi_entity_id, pi_record_id, pi_operation_id, pi_hash, SYSTIMESTAMP);
-            ELSE
-                UPDATE sync_hashes
-                   SET hash_value     = pi_hash,
-                       operation_date = SYSTIMESTAMP,
-                       operation_id   = pi_operation_id
-                 WHERE entity_id = pi_entity_id
-                   AND record_id = pi_record_id;
-            END IF;
 
             INSERT INTO sync_logs(
                 entity_id, record_id, status_id, operation_id, api_url, api_username, message, log_datetime, payload, hash_value

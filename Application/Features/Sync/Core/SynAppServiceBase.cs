@@ -59,13 +59,14 @@ namespace Application.Features.Sync.Core
 
                 var entity = _mapper.Map<TEntity>(message.Payload);
 
-                //await _service.SaveOrUpdate(entity);
+                // Primeiro Salvar o Hash
+                await _hashService.SaveOrUpdate(syncHash);
+                await _service.SaveOrUpdate(entity);
 
                 syncLog.Status = StatusEnum.Success;
                 syncLog.Message = null;
 
-               //await _logService.Save(syncLog);
-               //await _hashService.SaveOrUpdate(syncHash);
+                await _logService.Save(syncLog);
 
                 return new DataResult { Success = true, Data = entity };
             }

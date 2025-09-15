@@ -1,4 +1,5 @@
 ﻿using Domain.Base.Enums;
+using Domain.Common.Enums;
 using System.Text.Json.Serialization;
 
 namespace Domain.Settings;
@@ -36,6 +37,9 @@ public class ConnectionSettings
     [JsonPropertyName("Password")]
     public required string Password { get; set; }
 
+    [JsonPropertyName("ServiceName")]
+    public string? ServiceName { get; set; }
+
     [JsonIgnore]
     public string ConnectionString
     {
@@ -45,8 +49,15 @@ public class ConnectionSettings
             {
                 SgbdType.Oracle =>
                     string.Format(
-                        "Data Source=(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = {0})(PORT = {1})))(CONNECT_DATA = (SID = {2})));Persist Security Info=True;User ID={3};Password={4};Pooling=True;Connection Timeout=60;",
-                        Host, Port, SID, User, Password
+                        "Data Source=(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = {0})(PORT = {1})))" +
+                        "(CONNECT_DATA = ({2}= {3})));" +
+                        "Persist Security Info=True;User ID={4};Password={5};Pooling=True;Connection Timeout=60;",
+                        Host,
+                        Port,
+                        !string.IsNullOrEmpty(ServiceName) ? "SERVICE_NAME" : "SID",
+                        !string.IsNullOrEmpty(ServiceName) ? ServiceName : SID,
+                        User,
+                        Password
                     ),
 
                 SgbdType.SqlServer =>

@@ -35,7 +35,9 @@ BEGIN
             p_stock_qty       => :NEW.stock_quantity,
             p_unit_of_measure => :NEW.unit_of_measure,
             p_manufacturer    => :NEW.manufacturer,
-            p_operation_id    => 2
+            p_operation_id    => 2,
+            p_sender_id       => 2, -- varia conforme o local
+            p_receiver_id     => 1 -- varia conforme o local
         );
     END IF;
 END;

@@ -1,9 +1,16 @@
+
 CREATE OR REPLACE TRIGGER trg_products_after_insert
 AFTER INSERT ON products
 FOR EACH ROW
 DECLARE
+    v_hash_new  VARCHAR2(256);
     v_hash_db   VARCHAR2(256);
 BEGIN
+    -- Calcula hash dos dados novos
+    v_hash_new := sync_pkg.hash_product(
+        p_id              => :NEW.id,
+        p_name            => :NEW.name
+    );
 
     BEGIN
         -- Busca hash atual na tabela de sincronização
@@ -18,8 +25,8 @@ BEGIN
             v_hash_db := NULL;
     END;
 
-    -- Só dispara se não existir hash
-    IF v_hash_db IS NULL THEN
+    -- Só dispara se for novo ou alterado
+    IF v_hash_db IS NULL OR v_hash_db <> v_hash_new THEN
         sync_pkg.send_product(
             p_id              => :NEW.id,
             p_name            => :NEW.name,
@@ -29,7 +36,9 @@ BEGIN
             p_stock_qty       => :NEW.stock_quantity,
             p_unit_of_measure => :NEW.unit_of_measure,
             p_manufacturer    => :NEW.manufacturer,
-            p_operation_id    => 1
+            p_operation_id    => 1,
+            p_sender_id       => 2, -- varia conforme o local
+            p_receiver_id     => 1 -- varia conforme o local
         );
     END IF;
 END;
