@@ -1,13 +1,14 @@
+using API.Central.Controllers;
+using API.Remote.Controllers.Common;
+using Application.Common;
+using Application.Features.Mapping;
 using Domain.Settings;
 using Libs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using API.Remote.Controllers.Common;
 using System.Text;
 using System.Text.Json.Serialization;
-using Application.Features.Mapping;
-using Application.Common;
 public class Program
 {
 
@@ -28,7 +29,7 @@ public class Program
     {
         builder.Services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remote API", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Central API", Version = "v1" });
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
@@ -142,10 +143,18 @@ public class Program
 
     private static void PrintConfiguration(WebApplicationBuilder builder)
     {
-        var settings = builder.Configuration.GetSection("").Get<AppSettings>();
+        AppSettings settings = null;
+        try
+        {
+            settings = builder.Configuration.Get<AppSettings>();
+        }
+        catch
+        {
+            Console.WriteLine("Não foi possível carregar AppSettings do arquivo de configuração.");
+        }
 
         Console.WriteLine("CORS AllowedOrigins:");
-        if (settings.Cors?.AllowedOrigins != null && settings.Cors.AllowedOrigins.Count > 0)
+        if (settings?.Cors?.AllowedOrigins != null && settings.Cors.AllowedOrigins.Count > 0)
         {
             foreach (var origin in settings.Cors.AllowedOrigins)
             {
@@ -157,8 +166,7 @@ public class Program
             Console.WriteLine("  - Nenhuma origem CORS configurada.");
         }
 
-        var https = settings.Kestrel?.Endpoints?.Https;
-
+        var https = settings?.Kestrel?.Endpoints?.Https;
         Console.WriteLine("Kestrel Configurações:");
 
         if (!string.IsNullOrEmpty(https?.Url))
@@ -171,12 +179,17 @@ public class Program
                 Console.WriteLine("    - Certificado:");
                 Console.WriteLine($"      - Caminho: {https.Certificate.Path}");
             }
+            else
+            {
+                Console.WriteLine("    - Nenhum certificado configurado.");
+            }
         }
         else
         {
             Console.WriteLine("  - Nenhuma configuração HTTPS encontrada.");
         }
     }
+
 
     private static void ConfigureServices(WebApplicationBuilder builder)
     {
