@@ -3,11 +3,10 @@ using Domain.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using Domain.Base.Enums;
+using Domain.Common.Enums;
 
 namespace Infrastructure.Data.Common
 {

@@ -1,4 +1,4 @@
-﻿namespace Domain.Base.Enums
+﻿namespace Domain.Common.Enums
 {
     public enum SgbdType
     {

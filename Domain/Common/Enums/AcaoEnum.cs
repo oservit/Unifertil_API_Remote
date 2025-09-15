@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Domain.Base.Enums
+namespace Domain.Common.Enums
 {
     public enum AcaoEnum
     {

@@ -1,5 +1,5 @@
 ﻿using Domain.Common;
-using Domain.Base.Enums;
+using Domain.Common.Enums;
 using Domain.Settings;
 using Infrastructure.Data.Common;
 using Infrastructure.Repositories.Common;
